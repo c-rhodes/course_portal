@@ -1,0 +1,5 @@
+[run]
+include = course_portal/*
+omit = *migrations*, *tests*
+plugins =
+    django_coverage_plugin
