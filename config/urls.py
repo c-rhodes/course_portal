@@ -21,6 +21,7 @@ urlpatterns = [
 
     # Your stuff: custom urls includes go here
     url(r'^course/', include('course.urls', namespace='course')),
+    url(r'^v1/api/', include('course_rest_api.urls', namespace='course-rest-api')),
 
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -47,7 +47,8 @@ LOCAL_APPS = (
     # custom users app
     'course_portal.users.apps.UsersConfig',
     # Your stuff: custom apps go here
-    'course'
+    'course',
+    'course_rest_api'
 )
 
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
