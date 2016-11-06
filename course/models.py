@@ -10,7 +10,7 @@ class Tutor(models.Model):
 
 
 class Course(models.Model):
-    name = models.CharField(_('Name of course'), max_length=255)
+    name = models.CharField(_('Name of course'), max_length=255, unique=True)
     credits = models.PositiveIntegerField()
     duration = models.DurationField()
     tutors = models.ManyToManyField(Tutor)
