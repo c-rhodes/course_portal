@@ -15,10 +15,6 @@ urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
     url(settings.ADMIN_URL, admin.site.urls),
 
-    # User management
-    url(r'^users/', include('course_portal.users.urls', namespace='users')),
-    url(r'^accounts/', include('allauth.urls')),
-
     # Your stuff: custom urls includes go here
     url(r'^course/', include('course.urls', namespace='course')),
     url(r'^v1/api/', include('course_rest_api.urls', namespace='course-rest-api')),

@@ -10,8 +10,6 @@ django==1.10.2
 # Configuration
 django-environ==0.4.0
 
-
-
 # Forms
 django-braces==1.9.0
 django-crispy-forms==1.6.1
@@ -22,11 +20,6 @@ django-model-utils==2.6
 # Images
 Pillow==3.4.2
 
-# For user registration, either via email or social
-# Well-built with regular release cycles!
-django-allauth==0.28.0
-
-
 # Python-PostgreSQL Database Adapter
 psycopg2==2.6.2
 
@@ -35,13 +28,6 @@ awesome-slugify==1.6.5
 
 # Time zones support
 pytz==2016.7
-
-# Redis support
-django-redis==4.5.0
-redis>=2.10.5
-
-
-
 
 rcssmin==1.0.6 
 django-compressor==2.1
