@@ -250,5 +250,5 @@ REST_FRAMEWORK = {
         'rest_framework_xml.renderers.XMLRenderer',
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
-    'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'course.negotiation.IgnoreClientContentNegotiation'
+    'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'course.negotiation.JSONDefaultRendererContentNegotiation'
 }
