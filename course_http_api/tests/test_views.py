@@ -7,8 +7,8 @@ from django.utils.duration import duration_string
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ..models import Tutor, Course
-from ..factories import TutorFactory, CourseFactory
+from course.models import Tutor, Course
+from course.factories import TutorFactory, CourseFactory
 
 
 class CommonTestMixin:
@@ -44,7 +44,7 @@ class CommonTestMixin:
 
 class TestCourseDetail(APITestCase, CommonTestMixin):
     def setUp(self):
-        self.url = reverse('course:get-course')
+        self.url = reverse('course-http-api:get-course')
 
     def test_get_course_bad_request(self):
         """Expect a response status code of 400 for a request with invalid query parameters"""
@@ -67,7 +67,7 @@ class TestCourseDetail(APITestCase, CommonTestMixin):
 
 class TestCourseSearch(APITestCase, CommonTestMixin):
     def setUp(self):
-        self.url = reverse('course:search-course')
+        self.url = reverse('course-http-api:search-course')
 
     def test_get_course_bad_request(self):
         """Expect a response status code of 400 for a request with invalid query parameters"""
@@ -89,7 +89,7 @@ class TestCourseSearch(APITestCase, CommonTestMixin):
 
 class TestCourseCreate(APITestCase, CommonTestMixin):
     def setUp(self):
-        self.url = reverse('course:add-course')
+        self.url = reverse('course-http-api:add-course')
         self.post_data = {
             'name': 'foo',
             'credits': 30,

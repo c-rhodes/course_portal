@@ -44,6 +44,7 @@ LOCAL_APPS = (
     'course_portal.users.apps.UsersConfig',
     # Your stuff: custom apps go here
     'course',
+    'course_http_api',
     'course_rest_api'
 )
 

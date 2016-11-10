@@ -8,7 +8,7 @@ from rest_framework.test import APITestCase
 
 from course.models import Tutor, Course
 from course.factories import TutorFactory, CourseFactory
-from course.tests.test_views import CommonTestMixin
+from course_http_api.tests.test_views import CommonTestMixin
 
 
 class CourseDetailTests(APITestCase, CommonTestMixin):
@@ -23,7 +23,7 @@ class CourseDetailTests(APITestCase, CommonTestMixin):
         self.assertEqual(response.json(), self.format_course(course, tutor))
 
 
-def CourseListCreateTests(APITestCase):
+class CourseListCreateTests(APITestCase, CommonTestMixin):
     def setUp(self):
         self.url = reverse('course-rest-api:course-list')
 
