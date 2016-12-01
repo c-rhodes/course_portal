@@ -36,3 +36,7 @@
 [hidden][style="display: block;"] {
   display: block !important;
 }
+
+.has-error {
+  color: #a94442;
+}

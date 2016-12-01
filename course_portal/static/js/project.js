@@ -19,3 +19,46 @@ Issues with the above approach:
 4. Undocumented: No mention in the documentation, or it's too hard for me to find
 */
 $('.form-group').removeClass('row');
+
+function apply_form_field_error(fieldname, error) {
+    $input = $('#id_' + fieldname);
+    $container = $('#div_id_' + fieldname);
+    var error_msg = $('<span />').addClass('error').text(error[0]);
+
+    $container.addClass('has-error');
+    error_msg.insertAfter($input);
+}
+
+function clear_form_field_errors(form) {
+    $('.error', $(form)).remove();
+    $('.has-error', $(form)).removeClass('has-error');
+}
+
+function add_success_message(message) {
+    (function (el) {
+        setTimeout(function () {
+            el.children().remove('div');
+        }, 5000);
+    }($('#messages').append('<div class="alert alert-success">' + message + '</div>')));
+}
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}

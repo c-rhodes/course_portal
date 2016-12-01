@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+	<div class="row">
+		<h3>Enterprise Programming Assignment | Cullen Rhodes | 13116683</h3>
+		<hr>
+	</div>
+	<div class="row">
+		<div class="col-md-4">
+			<h3>Add Course</h3><hr>
+			{% crispy add_course_form %}
+		</div>
+		<div class="col-md-4">
+			<h3>Search Courses</h3><hr>
+			{% crispy course_search_form %}
+		</div>
+		<div class="col-md-4">
+			<h3>List All Courses</h3><hr>
+			{% crispy course_list_form %}
+		</div>
+	</div>
+	<hr>
+	<div class="row">
+		<div class="col-md-6">
+			<table class="table" id="course-table" style="display: none;">
+				<thead>
+					<tr>
+						<th>Course</th>
+						<th>Credits</th>
+						<th>Duration</th>
+						<th>Tutors</th>
+						<th>Edit</th>
+						<th>Delete</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+		<div class="col-md-6 raw-output">
+			<h3></h3>
+			<pre></pre>
+		</div>
+	</div>
+{% endblock content %}
+
+{% block modal %}
+{% include 'course/modals/confirm_course_delete.html' %}
+{% endblock modal %}
+{% block javascript %}
+{{ block.super }}
+<script type="text/javascript">
+	$(document).ready(function() {
+		var csrftoken = getCookie('csrftoken');
+		$.ajaxSetup({
+		    beforeSend: function(xhr, settings) {
+		        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+		            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+		        }
+		    }
+		});
+
+		function update_course_table(data, format) {
+			$course_table = $('#course-table');
+			$course_table.find('tbody').empty();
+			$course_table.show();
+
+			var fields = ['name', 'credits', 'duration'];
+			if(format == "json") {
+				for (var i in data) {
+					course = data[i];
+
+					var row = $('<tr>');
+					for (j in fields)
+						row.append($('<td>').html(course[fields[j]]));
+
+					var tutors = [];
+					for (var k in course['tutors']) {
+						tutor = course['tutors'][k];
+						tutors.push(tutor['name']);
+					}
+					row.append($('<td>').html(tutors.join(', ')));
+					$course_table.find('tbody').append(row);
+
+
+					row.append($('<td>').html('<button type="button" class="btn btn-sm btn-primary">Edit</button>'));
+					row.append($('<td>').html('<button type="button" class="btn btn-sm btn-danger">Delete</button>'));
+				}
+			}
+			else if (format == "xml") {
+				$(data).find('root').children('list-item').each(function() {
+					var row = $('<tr>');
+					for (var i in fields) {
+						field = fields[i];
+						row.append($('<td>').html($(this).children(field).text()));
+					}
+
+					var tutors = [];
+					$(this).find('list-item').each(function() {
+						tutors.push($(this).find('name').text());
+					});
+					row.append($('<td>').html(tutors.join(', ')));
+					$course_table.find('tbody').append(row);
+				});
+			}
+			// TODO: add plain text
+		}
+
+		function show_raw_output(data, format) {
+			$('.col-md-6.raw-output h3').html(format.toUpperCase() + ' format');
+			if (format == "json") {
+				$('.col-md-6.raw-output pre').text(JSON.stringify(data, undefined, 4));
+			}
+			else if (format == "xml") {
+				xmlString = (new XMLSerializer()).serializeToString(data);
+				$('.col-md-6.raw-output pre').text(vkbeautify.xml(xmlString));
+			}
+		}
+
+		$add_course_form = $('#course-create-form');
+		$add_course_form.submit(function(event) {
+			event.preventDefault();
+			clear_form_field_errors($(this));
+
+			var formdata = $add_course_form.serializeArray();
+			var data = {'tutors': []};
+			$.each(formdata, function() {
+				if (this.name == 'tutors') {
+					data[this.name].push({'id': this.value});
+				}
+				else {
+					data[this.name] = this.value;
+				}
+			});
+
+			$.ajax({
+				dataType: 'json',
+	            contentType: 'application/json',
+	            type: $add_course_form.attr('method'),
+	            url: $add_course_form.attr('action'),
+	            data: JSON.stringify(data),
+	            success: function (data) {
+	                add_success_message('Course successfully added');
+	                $add_course_form[0].reset();
+	            },
+	            error: function(data, status, jqXHR) {
+	            	var errors = $.parseJSON(data.responseText);
+	                $.each(errors, function(index, value) {
+	                    apply_form_field_error(index, value);
+	                });
+		        }
+			});
+		});
+
+		$search_course_form = $('#course-search-form');
+		$search_course_form.submit(function(event) {
+			event.preventDefault();
+			var searchinput = $('#id_name', this).val();
+			var format = $('#id_format', this).val();
+			$.ajax({
+				dataType: format,
+				type: 'GET',
+				url: "{% url 'course-http-api:search-course' %}?coursename=" + searchinput + "&format=" + format,
+				success: function(data) {
+					update_course_table(data, format);
+					show_raw_output(data, format);
+				}
+			});
+		});
+
+		$course_list_form = $('#course-list-form');
+		$course_list_form.submit(function(event) {
+			event.preventDefault();
+			var format = $('#id_format', this).val();
+			$.ajax({
+				dataType: format,
+				type: 'GET',
+				url: "{% url 'course-rest-api:course-list' %}?format=" + format,
+				success: function(data) {
+					update_course_table(data, format);
+					show_raw_output(data, format);
+				}
+			});
+		});
+	});
+</script>
+{% endblock javascript %}

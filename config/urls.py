@@ -7,16 +7,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
+from course.views import RestAPIDemoHome
 
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name='pages/home.html'), name='home'),
-    url(r'^about/$', TemplateView.as_view(template_name='pages/about.html'), name='about'),
+    url(r'^$', RestAPIDemoHome.as_view(), name='home'),
 
     # Django Admin, use {% url 'admin:index' %}
     url(settings.ADMIN_URL, admin.site.urls),
 
     # Your stuff: custom urls includes go here
-    url(r'^course/', include('course.urls', namespace='course')),
     url(r'^v1/http/', include('course_http_api.urls', namespace='course-http-api')),
     url(r'^v1/rest/', include('course_rest_api.urls', namespace='course-rest-api')),
 
