@@ -159,8 +159,8 @@
                 },
                 error: function(data, status, jqXHR) {
                     var errors = $.parseJSON(data.responseText);
-                    $.each(errors, function(index, value) {
-                        apply_form_field_error(index, value);
+                    $.each(errors, function(fieldname, error) {
+                        apply_form_field_error($add_course_form, fieldname, error);
                     });
                 }
             });
@@ -213,11 +213,15 @@
         });
 
         $(document).on('click', '[id^=updateCourse-]', function(event) {
+            $course_update_form = $('#course-update-form');
+            $course_update_form[0].reset();
+            clear_form_field_errors($course_update_form);
+
             $('#updateCourseModal').modal('show');
 
             var course_id = $(this).prop('id').split('-')[1];
             var submit_url = "{% url 'course-rest-api:course-detail' 0 %}".replace(0, course_id);
-            $course_update_form = $('#course-update-form');
+
             $course_update_form.attr('action', submit_url);
 
             // Update form with course data
@@ -266,8 +270,8 @@
                 },
                 error: function(data, status, jqXHR) {
                     var errors = $.parseJSON(data.responseText);
-                    $.each(errors, function(index, value) {
-                        apply_form_field_error(index, value);
+                    $.each(errors, function(fieldname, error) {
+                        apply_form_field_error($course_update_form, fieldname, error);
                     });
                 }
             });

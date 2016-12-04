@@ -20,9 +20,9 @@ Issues with the above approach:
 */
 $('.form-group').removeClass('row');
 
-function apply_form_field_error(fieldname, error) {
-    $input = $('#id_' + fieldname);
-    $container = $('#div_id_' + fieldname);
+function apply_form_field_error(form, fieldname, error) {
+    $input = form.find('#id_' + fieldname);
+    $container = form.find('#div_id_' + fieldname);
     var error_msg = $('<span />').addClass('error').text(error[0]);
 
     $container.addClass('has-error');

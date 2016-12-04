@@ -20,6 +20,7 @@ class AddCourseForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['duration'].widget.attrs['placeholder'] = '[DD] [HH:[MM:]]ss[.uuuuuu].'
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_id = 'course-create-form'
