@@ -2,186 +2,276 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-	<div class="row">
-		<h3>Enterprise Programming Assignment | Cullen Rhodes | 13116683</h3>
-		<hr>
-	</div>
-	<div class="row">
-		<div class="col-md-4">
-			<h3>Add Course</h3><hr>
-			{% crispy add_course_form %}
-		</div>
-		<div class="col-md-4">
-			<h3>Search Courses</h3><hr>
-			{% crispy course_search_form %}
-		</div>
-		<div class="col-md-4">
-			<h3>List All Courses</h3><hr>
-			{% crispy course_list_form %}
-		</div>
-	</div>
-	<hr>
-	<div class="row">
-		<div class="col-md-6">
-			<table class="table" id="course-table" style="display: none;">
-				<thead>
-					<tr>
-						<th>Course</th>
-						<th>Credits</th>
-						<th>Duration</th>
-						<th>Tutors</th>
-						<th>Edit</th>
-						<th>Delete</th>
-					</tr>
-				</thead>
-				<tbody></tbody>
-			</table>
-		</div>
-		<div class="col-md-6 raw-output">
-			<h3></h3>
-			<pre></pre>
-		</div>
-	</div>
+    <div class="jumbotron container">
+        <h3>Enterprise Programming Assignment</h3>
+        <p>Cullen Rhodes | 13116683</p>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <h4>Add Course</h4><hr>
+            {% crispy add_course_form %}
+        </div>
+        <div class="col-md-4">
+            <h4>Search Courses</h4><hr>
+            {% crispy course_search_form %}
+        </div>
+        <div class="col-md-4">
+            <h4>List All Courses</h4><hr>
+            {% crispy course_list_form %}
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table" id="course-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Credits</th>
+                        <th>Duration</th>
+                        <th>Tutors</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="col-md-6 raw-output">
+            <h3></h3>
+            <pre></pre>
+        </div>
+    </div>
 {% endblock content %}
 
 {% block modal %}
-{% include 'course/modals/confirm_course_delete.html' %}
+{% include 'course/modals/update_course.html' %}
 {% endblock modal %}
+
 {% block javascript %}
 {{ block.super }}
 <script type="text/javascript">
-	$(document).ready(function() {
-		var csrftoken = getCookie('csrftoken');
-		$.ajaxSetup({
-		    beforeSend: function(xhr, settings) {
-		        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-		            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-		        }
-		    }
-		});
+    $(document).ready(function() {
+        var csrftoken = getCookie('csrftoken');
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
 
-		function update_course_table(data, format) {
-			$course_table = $('#course-table');
-			$course_table.find('tbody').empty();
-			$course_table.show();
+        function clear_output() {
+            $course_table = $('#course-table');
+            $course_table.find('tbody').empty();
+            $course_table.hide();
+            $('.col-md-6.raw-output h3').empty();
+            $('.col-md-6.raw-output pre').empty();
+        }
 
-			var fields = ['name', 'credits', 'duration'];
-			if(format == "json") {
-				for (var i in data) {
-					course = data[i];
+        function update_course_table(data, format) {
+            $course_table = $('#course-table');
+            $course_table.find('tbody').empty();
+            $course_table.show();
 
-					var row = $('<tr>');
-					for (j in fields)
-						row.append($('<td>').html(course[fields[j]]));
+            var fields = ['name', 'credits', 'duration'];
+            if(format == "json") {
+                for (var i in data) {
+                    var course = data[i];
+                    var course_id = course['id'];
 
-					var tutors = [];
-					for (var k in course['tutors']) {
-						tutor = course['tutors'][k];
-						tutors.push(tutor['name']);
-					}
-					row.append($('<td>').html(tutors.join(', ')));
-					$course_table.find('tbody').append(row);
+                    var row = $('<tr>');
+                    for (j in fields) {
+                        field = fields[j];
+                        row.append($('<td id="course_' + field + '">').html(course[field]));
+                    }
 
+                    var tutors = [];
+                    for (var k in course['tutors']) {
+                        tutor = course['tutors'][k];
+                        tutors.push(tutor['name']);
+                    }
+                    row.append($('<td id="course_tutors">').html(tutors.join(', ')));
+                    row.append($('<td>').html('<button id="updateCourse-' + course_id + '" type="button" class="btn btn-sm btn-primary">Edit</button>'));
+                    row.append($('<td>').html('<button id="deleteCourse-' + course_id + '" type="button" class="btn btn-sm btn-danger">Delete</button>'));
+                    $course_table.find('tbody').append(row);
+                }
+            }
+            else if (format == "xml") {
+                $(data).find('root').children('list-item').each(function() {
+                    var course_id = $(this).children('id').text();
+                    var row = $('<tr>');
 
-					row.append($('<td>').html('<button type="button" class="btn btn-sm btn-primary">Edit</button>'));
-					row.append($('<td>').html('<button type="button" class="btn btn-sm btn-danger">Delete</button>'));
-				}
-			}
-			else if (format == "xml") {
-				$(data).find('root').children('list-item').each(function() {
-					var row = $('<tr>');
-					for (var i in fields) {
-						field = fields[i];
-						row.append($('<td>').html($(this).children(field).text()));
-					}
+                    for (var i in fields) {
+                        field = fields[i];
+                        row.append($('<td id="course_' + field + '">').html($(this).children(field).text()));
+                    }
 
-					var tutors = [];
-					$(this).find('list-item').each(function() {
-						tutors.push($(this).find('name').text());
-					});
-					row.append($('<td>').html(tutors.join(', ')));
-					$course_table.find('tbody').append(row);
-				});
-			}
-			// TODO: add plain text
-		}
+                    var tutors = [];
+                    $(this).find('list-item').each(function() {
+                        tutors.push($(this).find('name').text());
+                    });
+                    row.append($('<td id="course_tutors">').html(tutors.join(', ')));
+                    row.append($('<td>').html('<button id="updateCourse-' + course_id + '" type="button" class="btn btn-sm btn-primary">Edit</button>'));
+                    row.append($('<td>').html('<button id="deleteCourse-' + course_id + '" type="button" class="btn btn-sm btn-danger">Delete</button>'));
+                    $course_table.find('tbody').append(row);
+                });
+            }
+            // TODO: add plain text
+        }
 
-		function show_raw_output(data, format) {
-			$('.col-md-6.raw-output h3').html(format.toUpperCase() + ' format');
-			if (format == "json") {
-				$('.col-md-6.raw-output pre').text(JSON.stringify(data, undefined, 4));
-			}
-			else if (format == "xml") {
-				xmlString = (new XMLSerializer()).serializeToString(data);
-				$('.col-md-6.raw-output pre').text(vkbeautify.xml(xmlString));
-			}
-		}
+        function show_raw_output(data, format) {
+            $('.col-md-6.raw-output h3').html(format.toUpperCase() + ' format');
+            if (format == "json") {
+                $('.col-md-6.raw-output pre').text(JSON.stringify(data, undefined, 4));
+            }
+            else if (format == "xml") {
+                xmlString = (new XMLSerializer()).serializeToString(data);
+                $('.col-md-6.raw-output pre').text(vkbeautify.xml(xmlString));
+            }
+        }
 
-		$add_course_form = $('#course-create-form');
-		$add_course_form.submit(function(event) {
-			event.preventDefault();
-			clear_form_field_errors($(this));
+        $add_course_form = $('#course-create-form');
+        $add_course_form.submit(function(event) {
+            event.preventDefault();
+            clear_form_field_errors($(this));
 
-			var formdata = $add_course_form.serializeArray();
-			var data = {'tutors': []};
-			$.each(formdata, function() {
-				if (this.name == 'tutors') {
-					data[this.name].push({'id': this.value});
-				}
-				else {
-					data[this.name] = this.value;
-				}
-			});
+            var formdata = $add_course_form.serializeArray();
+            var data = {'tutors': []};
+            $.each(formdata, function() {
+                if (this.name == 'tutors') {
+                    data[this.name].push({'id': this.value});
+                }
+                else {
+                    data[this.name] = this.value;
+                }
+            });
 
-			$.ajax({
-				dataType: 'json',
-	            contentType: 'application/json',
-	            type: $add_course_form.attr('method'),
-	            url: $add_course_form.attr('action'),
-	            data: JSON.stringify(data),
-	            success: function (data) {
-	                add_success_message('Course successfully added');
-	                $add_course_form[0].reset();
-	            },
-	            error: function(data, status, jqXHR) {
-	            	var errors = $.parseJSON(data.responseText);
-	                $.each(errors, function(index, value) {
-	                    apply_form_field_error(index, value);
-	                });
-		        }
-			});
-		});
+            $.ajax({
+                dataType: 'json',
+                contentType: 'application/json',
+                type: $add_course_form.attr('method'),
+                url: $add_course_form.attr('action'),
+                data: JSON.stringify(data),
+                success: function (data) {
+                    add_success_message('Course successfully added');
+                    $add_course_form[0].reset();
+                },
+                error: function(data, status, jqXHR) {
+                    var errors = $.parseJSON(data.responseText);
+                    $.each(errors, function(index, value) {
+                        apply_form_field_error(index, value);
+                    });
+                }
+            });
+        });
 
-		$search_course_form = $('#course-search-form');
-		$search_course_form.submit(function(event) {
-			event.preventDefault();
-			var searchinput = $('#id_name', this).val();
-			var format = $('#id_format', this).val();
-			$.ajax({
-				dataType: format,
-				type: 'GET',
-				url: "{% url 'course-http-api:search-course' %}?coursename=" + searchinput + "&format=" + format,
-				success: function(data) {
-					update_course_table(data, format);
-					show_raw_output(data, format);
-				}
-			});
-		});
+        $search_course_form = $('#course-search-form');
+        $search_course_form.submit(function(event) {
+            event.preventDefault();
+            var searchinput = $('#id_name', this).val();
+            var format = $('#id_format', this).val();
+            $.ajax({
+                dataType: format,
+                type: 'GET',
+                url: "{% url 'course-http-api:search-course' %}?coursename=" + searchinput + "&format=" + format,
+                success: function(data) {
+                    update_course_table(data, format);
+                    show_raw_output(data, format);
+                    $search_course_form[0].reset();
+                }
+            });
+        });
 
-		$course_list_form = $('#course-list-form');
-		$course_list_form.submit(function(event) {
-			event.preventDefault();
-			var format = $('#id_format', this).val();
-			$.ajax({
-				dataType: format,
-				type: 'GET',
-				url: "{% url 'course-rest-api:course-list' %}?format=" + format,
-				success: function(data) {
-					update_course_table(data, format);
-					show_raw_output(data, format);
-				}
-			});
-		});
-	});
+        $course_list_form = $('#course-list-form');
+        $course_list_form.submit(function(event) {
+            event.preventDefault();
+            var format = $('#id_format', this).val();
+            $.ajax({
+                dataType: format,
+                type: 'GET',
+                url: "{% url 'course-rest-api:course-list' %}?format=" + format,
+                success: function(data) {
+                    update_course_table(data, format);
+                    show_raw_output(data, format);
+                }
+            });
+        });
+
+        $(document).on('click', '[id^=deleteCourse-]', function(event) {
+            event.preventDefault();
+            var course_id = $(this).prop("id").split("-")[1];
+            var url = "{% url 'course-rest-api:course-detail' 0 %}".replace(0, course_id);
+            $.ajax({
+                type: 'DELETE',
+                url: url,
+                success: function(data) {
+                    add_success_message('Course successfully deleted');
+                    clear_output();
+                }
+            });
+        });
+
+        $(document).on('click', '[id^=updateCourse-]', function(event) {
+            $('#updateCourseModal').modal('show');
+
+            var course_id = $(this).prop('id').split('-')[1];
+            var submit_url = "{% url 'course-rest-api:course-detail' 0 %}".replace(0, course_id);
+            $course_update_form = $('#course-update-form');
+            $course_update_form.attr('action', submit_url);
+
+            // Update form with course data
+            var $row = $(this).closest('tr');
+            var name = $row.find('#course_name').html();
+            var credits = $row.find('#course_credits').html();
+            var duration = $row.find('#course_duration').html();
+            $course_update_form.find('#id_name').val(name);
+            $course_update_form.find('#id_credits').val(credits);
+            $course_update_form.find('#id_duration').val(duration);
+
+            var tutors = $row.find('#course_tutors').html().split(', ');
+            $course_update_form.find('#id_tutors').find('option').each(function(index, element) {
+                if ($.inArray(element.text, tutors) > -1) {
+                    $(this).prop('selected', true);
+                }
+            });
+        });
+
+        $course_update_form = $('#course-update-form');
+        $course_update_form.submit(function(event) {
+            event.preventDefault();
+            clear_form_field_errors($(this));
+
+            var formdata = $course_update_form.serializeArray();
+            var data = {'tutors': []};
+            $.each(formdata, function() {
+                if (this.name == 'tutors') {
+                    data[this.name].push({'id': this.value});
+                }
+                else {
+                    data[this.name] = this.value;
+                }
+            });
+
+            $.ajax({
+                dataType: 'json',
+                contentType: 'application/json',
+                type: 'PATCH',
+                url: $course_update_form.attr('action'),
+                data: JSON.stringify(data),
+                success: function (data) {
+                    add_success_message('Course successfully updated');
+                    $course_update_form[0].reset();
+                    $('#updateCourseModal').modal('hide');
+                },
+                error: function(data, status, jqXHR) {
+                    var errors = $.parseJSON(data.responseText);
+                    $.each(errors, function(index, value) {
+                        apply_form_field_error(index, value);
+                    });
+                }
+            });
+        });
+    });
 </script>
 {% endblock javascript %}

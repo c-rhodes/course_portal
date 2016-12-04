@@ -22,6 +22,30 @@ class CourseDetailTests(APITestCase, CommonTestMixin):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json(), self.format_course(course, tutor))
 
+    def test_update_course(self):
+        tutor = TutorFactory()
+        course = CourseFactory(tutors=[tutor])
+        tutor_2 = TutorFactory()
+        post_data = {
+            'name': 'foo',
+            'credits': 100,
+            'duration': timedelta(1),
+            'tutors': [{'id': tutor_2.pk}]
+        }
+        response = self.client.patch(self.url(kwargs=dict(pk=course.pk)), post_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        course.refresh_from_db()
+        self.assertEqual(Course.objects.count(), 1)
+        self.assertEqual(course.tutors.count(), 1)
+        self.compare_course(course, post_data)
+        self.assertEqual(course.tutors.first(), tutor_2)
+
+    def test_delete_course(self):
+        course = CourseFactory()
+        response = self.client.delete(self.url(kwargs=dict(pk=course.pk)))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Course.objects.count(), 0)
+
 
 class CourseListCreateTests(APITestCase, CommonTestMixin):
     def setUp(self):

@@ -27,6 +27,18 @@ class AddCourseForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Submit'))
 
 
+class UpdateCourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'course-update-form'
+        self.helper.add_input(Submit('submit', 'Update'))
+
+
 class SearchCourseForm(forms.ModelForm):
     format = forms.ChoiceField(choices=format_choices)
 

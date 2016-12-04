@@ -50,3 +50,18 @@ class CourseSerializer(serializers.ModelSerializer):
             course.tutors.add(tutor)
         course.save()
         return course
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.credits = validated_data.get('credits', instance.credits)
+        instance.duration = validated_data.get('duration', instance.duration)
+        tutors_data = validated_data.get('tutors', [])
+        instance.tutors = []
+        for tutor_data in tutors_data:
+            if 'id' in tutor_data:
+                tutor = Tutor.objects.get(pk=tutor_data['id'])
+            else:
+                tutor = Tutor.objects.create(**tutor_data)
+            instance.tutors.add(tutor)
+        instance.save()
+        return instance

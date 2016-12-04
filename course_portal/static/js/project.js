@@ -42,6 +42,26 @@ function add_success_message(message) {
     }($('#messages').append('<div class="alert alert-success">' + message + '</div>')));
 }
 
+function showModal(selector, bodyText, confirmFunction) {
+    var $modal = $(selector);
+    if (bodyText !== undefined) {
+        $modal.find('.modal-body').html(bodyText);
+    }
+    $modal.modal('show');
+
+    $modal.find('#confirm-no').click(function(event) {
+        event.preventDefault();
+        $modal.modal('hide');
+    });
+
+    $modal.find('#confirm-yes').click(function(event) {
+        $modal.modal('hide');
+        if (confirmFunction !== undefined) {
+            confirmFunction(event);
+        }
+    });
+}
+
 function getCookie(name) {
     var cookieValue = null;
     if (document.cookie && document.cookie !== '') {
