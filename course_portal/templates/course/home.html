@@ -52,6 +52,7 @@
 {{ block.super }}
 <script type="text/javascript">
     $(document).ready(function() {
+        // https://docs.djangoproject.com/en/1.10/ref/csrf/#ajax
         var csrftoken = getCookie('csrftoken');
         $.ajaxSetup({
             beforeSend: function(xhr, settings) {
@@ -73,6 +74,14 @@
             $course_table = $('#course-table');
             $course_table.find('tbody').empty();
             $course_table.show();
+
+            if (format == "text") {
+                /* For plaintext the api returns the JSON as a Python bytestring e.g. b'foo',
+                to parse as JSON remove the first 2 characters and the last.
+                */
+                data = $.parseJSON(data.slice(2, -1));
+                format = "json";
+            }
 
             var fields = ['name', 'credits', 'duration'];
             if(format == "json") {
@@ -117,7 +126,6 @@
                     $course_table.find('tbody').append(row);
                 });
             }
-            // TODO: add plain text
         }
 
         function show_raw_output(data, format) {
@@ -128,6 +136,10 @@
             else if (format == "xml") {
                 xmlString = (new XMLSerializer()).serializeToString(data);
                 $('.col-md-6.raw-output pre').text(vkbeautify.xml(xmlString));
+            }
+            else if (format == "text") {
+                $('.col-md-6.raw-output h3').html('Plaintext format');
+                $('.col-md-6.raw-output pre').text(data);
             }
         }
 
