@@ -37,6 +37,7 @@ DJANGO_APPS = (
 THIRD_PARTY_APPS = (
     'crispy_forms',
     'rest_framework',
+    'rest_framework_docs',
 )
 
 # Apps specific for this project go here.

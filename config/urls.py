@@ -10,6 +10,8 @@ from django.views import defaults as default_views
 from course.views import RestAPIDemoHome
 
 urlpatterns = [
+    url(r'^docs/', include('rest_framework_docs.urls')),
+
     url(r'^$', RestAPIDemoHome.as_view(), name='home'),
 
     # Django Admin, use {% url 'admin:index' %}
