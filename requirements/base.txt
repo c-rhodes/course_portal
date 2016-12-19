@@ -9,6 +9,7 @@ django==1.10.2
 
 # Configuration
 django-environ==0.4.0
+whitenoise==3.2.2
 
 # Forms
 django-braces==1.9.0
@@ -30,7 +31,6 @@ awesome-slugify==1.6.5
 pytz==2016.7
 
 rcssmin==1.0.6 
-django-compressor==2.1
 
 
 # Your custom requirements go here

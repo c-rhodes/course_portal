@@ -1,4 +1,4 @@
-{% load staticfiles i18n compress%}<!DOCTYPE html>
+{% load staticfiles i18n %}<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -18,10 +18,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" integrity="sha384-2hfp1SzUoho7/TsGGGDaFdsuuDL0LX2hnUp6VkX3CUQ2K4K+xjboZdsXyp4oUHZj" crossorigin="anonymous">
 
     <!-- Your stuff: Third-party CSS libraries go here -->
-    {% compress css %}
     <!-- This file stores project-specific CSS -->
     <link href="{% static 'css/project.css' %}" rel="stylesheet">
-    {% endcompress %}
     {% endblock %}
 
   </head>
@@ -73,9 +71,7 @@
       <!-- Your stuff: Third-party javascript libraries go here -->
 
       <!-- place project specific Javascript in this file -->
-      {% compress js %}
       <script src="{% static 'js/project.js' %}"></script>
-      {% endcompress %}
 
     {% endblock javascript %}
   </body>
