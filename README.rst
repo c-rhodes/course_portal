@@ -23,7 +23,7 @@ Download and install the following:
 
 Create postgres database::
 
-    $ sudo su - postgres -c "psql"
+  $ sudo su - postgres -c "psql"
     postgres=# CREATE DATABASE course_portal OWNER cullenrhodes encoding 'utf8';
     
 Create virtualenv:
