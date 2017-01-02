@@ -42,7 +42,7 @@ Create superuser via command line (Optional)::
 
     $ ./manage.py createsuperuser
 
-Run server:
+Run server::
     
     $ ./manage.py runserver
     
