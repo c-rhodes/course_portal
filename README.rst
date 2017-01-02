@@ -86,10 +86,3 @@ Deploy to Heroku with the following commands::
     heroku open
 
 .. _`Install Heroku Toolbelt`: https://devcenter.heroku.com/articles/heroku-cli
-
-Settings
---------
-
-Moved to settings_.
-
-.. _settings: http://cookiecutter-django.readthedocs.io/en/latest/settings.html
