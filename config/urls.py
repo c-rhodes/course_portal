@@ -7,12 +7,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.views import defaults as default_views
-from course.views import RestAPIDemoHome
+from course.views import rest_api_demo_home_view
 
 urlpatterns = [
     url(r'^docs/', include('rest_framework_docs.urls')),
 
-    url(r'^$', RestAPIDemoHome.as_view(), name='home'),
+    url(r'^$', rest_api_demo_home_view, name='home'),
 
     # Django Admin, use {% url 'admin:index' %}
     url(settings.ADMIN_URL, admin.site.urls),
