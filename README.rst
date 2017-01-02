@@ -23,22 +23,22 @@ Download and install the following:
 
 Create postgres database::
 
-  $ sudo su - postgres -c "psql"
+    $ sudo su - postgres -c "psql"
     postgres=# CREATE DATABASE course_portal OWNER cullenrhodes encoding 'utf8';
     
-Create virtualenv:
+Create virtualenv::
 
     $ mkvirtualenv -p $(which python3) course_portal
 
-Install dependencies:
+Install dependencies::
 
     $ pip install -r requirements/local.txt
 
-Run migrations:
+Run migrations::
     
     $ ./manage.py migrate
     
-Create superuser via command line (Optional):
+Create superuser via command line (Optional)::
 
     $ ./manage.py createsuperuser
 
