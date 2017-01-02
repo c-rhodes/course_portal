@@ -1,63 +1,52 @@
-course_portal
-=============
+Enterprise Programming Assignment
+=================================
 
 Web service for course information
 
-.. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg
-     :target: https://github.com/pydanny/cookiecutter-django/
-     :alt: Built with Cookiecutter Django
+This project is deployed on Heroku and can be accessed with this url: https://lit-anchorage-84265.herokuapp.com/
+
+The following instructions detail how to get this project running locally and how to deploy it to Heroku.
 
 
-:License: MIT
+Running Locally (Tested on Ubuntu 16.04)
+----------------------------------------
 
+Download and install the following:
 
-Settings
---------
+* `Python 3`_
+* `Postgresql`_
+* `virtualenvwrapper`_
 
-Moved to settings_.
+.. _`Python 3`: https://www.python.org/downloads/
+.. _Postgresql: https://www.postgresql.org/download/
+.. _virtualenvwrapper: https://virtualenvwrapper.readthedocs.io/en/latest/
 
-.. _settings: http://cookiecutter-django.readthedocs.io/en/latest/settings.html
+Create postgres database::
 
-Basic Commands
---------------
+    $ sudo su - postgres -c "psql"
+    postgres=# CREATE DATABASE course_portal OWNER cullenrhodes encoding 'utf8';
+    
+Create virtualenv:
 
-Setting Up Your Users
-^^^^^^^^^^^^^^^^^^^^^
+    $ mkvirtualenv -p $(which python3) course_portal
 
-* To create a **normal user account**, just go to Sign Up and fill out the form. Once you submit it, you'll see a "Verify Your E-mail Address" page. Go to your console to see a simulated email verification message. Copy the link into your browser. Now the user's email should be verified and ready to go.
+Install dependencies:
 
-* To create an **superuser account**, use this command::
+    $ pip install -r requirements/local.txt
 
-    $ python manage.py createsuperuser
+Run migrations:
+    
+    $ ./manage.py migrate
+    
+Create superuser via command line (Optional):
 
-For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
+    $ ./manage.py createsuperuser
 
-Test coverage
-^^^^^^^^^^^^^
-
-To run the tests, check your test coverage, and generate an HTML coverage report::
-
-    $ coverage run manage.py test
-    $ coverage html
-    $ open htmlcov/index.html
-
-Running tests with py.test
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-::
-
-  $ py.test
-
-Live reloading and Sass CSS compilation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Moved to `Live reloading and SASS compilation`_.
-
-.. _`Live reloading and SASS compilation`: http://cookiecutter-django.readthedocs.io/en/latest/live-reloading-and-sass-compilation.html
-
-
-
-
+Run server:
+    
+    $ ./manage.py runserver
+    
+The project should now be running at **localhost:8000**
 
 Deployment
 ----------
@@ -68,9 +57,39 @@ The following details how to deploy this application.
 Heroku
 ^^^^^^
 
-See detailed `cookiecutter-django Heroku documentation`_.
+`Install Heroku Toolbelt`_
 
-.. _`cookiecutter-django Heroku documentation`: http://cookiecutter-django.readthedocs.io/en/latest/deployment-on-heroku.html
+Deploy to Heroku with the following commands::
+
+    heroku create --buildpack https://github.com/heroku/heroku-buildpack-python
+
+    heroku addons:create heroku-postgresql:hobby-dev
+
+    heroku config:set DJANGO_ADMIN_URL="$(openssl rand -base64 32)"
+    heroku config:set DJANGO_SECRET_KEY="$(openssl rand -base64 64)"
+    heroku config:set DJANGO_SETTINGS_MODULE='config.settings.production'
+    heroku config:set DJANGO_ALLOWED_HOSTS='.herokuapp.com'
+
+    heroku config:set DJANGO_MAILGUN_SERVER_NAME=sandboxb7de56698df443608af1bb4d7364d354.mailgun.org
+    heroku config:set DJANGO_MAILGUN_API_KEY=key-328f4f3aecd8c8ac97ebb040c5cd145a
+    heroku config:set MAILGUN_SENDER_DOMAIN=lit-anchorage-84265
 
 
+    heroku config:set PYTHONHASHSEED=random
+    heroku config:set DJANGO_ADMIN_URL=\^admin/
 
+
+    git push heroku master
+    heroku run python manage.py migrate
+    heroku run python manage.py check --deploy
+    heroku run python manage.py createsuperuser
+    heroku open
+
+.. _`Install Heroku Toolbelt`: https://devcenter.heroku.com/articles/heroku-cli
+
+Settings
+--------
+
+Moved to settings_.
+
+.. _settings: http://cookiecutter-django.readthedocs.io/en/latest/settings.html
