@@ -257,7 +257,11 @@ REST_FRAMEWORK = {
         'course.renderers.PlainTextRenderer',
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
-    'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'course.negotiation.JSONDefaultRendererContentNegotiation'
+    'DEFAULT_CONTENT_NEGOTIATION_CLASS':
+        'course.negotiation.JSONDefaultRendererContentNegotiation',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+    )
 }
 
 # LOGGING CONFIGURATION

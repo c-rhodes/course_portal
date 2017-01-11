@@ -1,7 +1,12 @@
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import ensure_csrf_cookie
 
-from .forms import AddCourseForm, UpdateCourseForm, SearchCourseForm, ListCourseForm
+from .forms import (
+    AddCourseForm,
+    UpdateCourseForm,
+    SearchCourseForm,
+    ListCourseForm,
+)
 
 
 class RestAPIDemoHome(TemplateView):
@@ -16,4 +21,5 @@ class RestAPIDemoHome(TemplateView):
         return context
 
 
-rest_api_demo_home_view = ensure_csrf_cookie(RestAPIDemoHome.as_view())
+rest_api_demo_home_view = ensure_csrf_cookie(
+    RestAPIDemoHome.as_view())

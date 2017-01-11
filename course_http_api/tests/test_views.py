@@ -47,7 +47,8 @@ class TestCourseDetail(APITestCase, CommonTestMixin):
         self.url = reverse('course-http-api:get-course')
 
     def test_get_course_bad_request(self):
-        """Expect a response status code of 400 for a request with invalid query parameters"""
+        """Expect a response status code of 400 for a request with invalid
+        query parameters"""
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
